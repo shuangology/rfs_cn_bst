@@ -1472,6 +1472,36 @@ FUNCTION {editor.sort}
     { editor sort.format.names }
   if$
 }
+
+
+FUNCTION {year.author.sort}
+{ year empty$
+    { author empty$
+        { key empty$
+            { "to sort, need year, author, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { author sort.format.names }
+      if$
+    }
+    { year sort.format.names }
+  if$
+}
+FUNCTION {year.sort}
+{ year empty$
+    { key empty$
+        { "to sort, need year or key in " cite$ * warning$
+          ""
+        }
+        { key sortify }
+      if$
+    }
+    { year sort.format.names }
+  if$
+}
 FUNCTION {presort}
 { calc.label
   label sortify
@@ -1480,13 +1510,13 @@ FUNCTION {presort}
   type$ "book" =
   type$ "inbook" =
   or
-    'author.editor.sort
-%     'year.author.sort
+%    'author.editor.sort
+     'year.author.sort
     { type$ "proceedings" =
-        'editor.sort
-        'author.sort
+%        'editor.sort
 %        'author.sort
-%        'year.sort
+        'author.sort
+        'year.sort
       if$
     }
   if$
