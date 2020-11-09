@@ -1,20 +1,7 @@
-%% NOTICE:
-%% This is file `rfsnew_CN.bst',
-%% is modified from Patrick W Daly's version in 2007 (see description below).
-%% This bibliography style file now works for text in Chinese.
-%% This is an author-year citation style bibliography, mainly adopted in Finance/Economics study.
- % The \cite command functions as follows:
- %   \citet{key} ==>>                Jones 等. (1990)
- %   \citet*{key} ==>>               Jones, Baker, 和 Smith (1990)
- %   \citep{key} ==>>                (Jones 等., 1990)
- %   \citep*{key} ==>>               (Jones, Baker, 和 Smith, 1990)
- %   \citep[chap. 2]{key} ==>>       (Jones et al., 1990, chap. 2)
- %   \citep[如，][]{key} ==>>        (如， Jones et al., 1990)
- %   \citep[e.g.][p. 32]{key} ==>>   (e.g. Jones et al., p. 32)
- %   \citeauthor{key} ==>>           Jones 等.
- %   \citeauthor*{key} ==>>          Jones, Baker, and Smith
- %   \citeyear{key} ==>>             1990
-% ===============================================================
+%%
+%% This is file `rfsnew.bst',
+%% generated with the docstrip utility.
+%%
 %% The original source files were:
 %%
 %% merlin.mbs  (with options: `ay,nat,nm-rev1,jnrlst,keyxyr,blkyear,dt-beg,yr-per,note-yr,atit-u,vnum-x,num-xser,ser-ed,jnm-x,add-pub,pre-edn,edpar,pp,ed,abr,ednx,ord,and-com,etal-xc,url,url-blk,nfss,')
@@ -1485,6 +1472,42 @@ FUNCTION {editor.sort}
     { editor sort.format.names }
   if$
 }
+I came up with a small set of modifications for a bst file. I only tested it with author-year style, francaissc.bst.
+
+Basically, the presort function must be altered.
+
+Without entering in too much details about the bst files, there is one thing to understand for making those modifications: the .sort are functions, that must be defined, for example author.editor.sort is most likely already defined in an author-year style.
+
+Hence, first thing to do is to add those functions:
+
+FUNCTION {year.author.sort}
+{ year empty$
+    { author empty$
+        { key empty$
+            { "to sort, need year, author, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { author sort.format.names }
+      if$
+    }
+    { year sort.format.names }
+  if$
+}
+FUNCTION {year.sort}
+{ year empty$
+    { key empty$
+        { "to sort, need year or key in " cite$ * warning$
+          ""
+        }
+        { key sortify }
+      if$
+    }
+    { year sort.format.names }
+  if$
+}
 FUNCTION {presort}
 { calc.label
   label sortify
@@ -1493,10 +1516,13 @@ FUNCTION {presort}
   type$ "book" =
   type$ "inbook" =
   or
-    'author.editor.sort
+%    'author.editor.sort
+     'year.author.sort
     { type$ "proceedings" =
-        'editor.sort
+%        'editor.sort
+%        'author.sort
         'author.sort
+        'year.sort
       if$
     }
   if$
@@ -1506,7 +1532,8 @@ FUNCTION {presort}
   *
   "    "
   *
-  title field.or.null
+%  title field.or.null
+  year field.or.null
   sort.format.title
   *
   #1 entry.max$ substring$
